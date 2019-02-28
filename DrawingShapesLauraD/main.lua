@@ -86,13 +86,13 @@ areaText: setTextColor(80/255, 5/255, 5/255)
 -- draw the Octagon
 myHexagon = display.newPolygon (200, 500, octagonVertices)
 
-
+myOctagon: setFillColor (233/255, 21/255, 21/255)
 
 -- set width of the border
 myHexagon.strokeWidth = 20
 
 -- set the color for the border
-myHexagon: setStrokeColor (15/255, 245/255, 245/255)
+myHexagon: setStrokeColor (255/255, 255/255, 255/255)
 
 -- set color of the text
 areaText = display.newText ("Hexagon", 675, 450, Arial, textSize, textColor)
