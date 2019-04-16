@@ -19,21 +19,22 @@ local questionObject
 local correctObject
 local numericField
 
-local randomNumber1 = math.random(1,10)
-local randomNumber2 = math.random(1,10)
-
-local randomNumber3 = math.random(1,10)
-local randomNumber4 = math.random(1,10)
-
-local randomNumber5 = math.random(11,20)
+-- addition
+local randomNumber1 = math.random(1,20)
+local randomNumber2 = math.random(1,20)
+-- substraction
+local randomNumber3 = math.random(1,20)
+local randomNumber4 = math.random(1,20)
+-- multiplication
+local randomNumber5 = math.random(1,10)
 local randomNumber6 = math.random(1,10)
-
+-- division
 local randomNumber7 = math.random(1,10)
 local randomNumber8 = math.random(1,10)
-
+-- exponents
 local randomNumber9 = math.random(1,5)
 local randomNumber10 = math.random(1,5)
-
+-- random operator
 local randomOperator = math.random(1,5)
 
 local userAnswer
@@ -56,6 +57,7 @@ local score = 0
 
 local gameOver
 local youWin
+local thumbDown
 
 ----------------------------------------------------------------------------------
 -- SOUNDS
@@ -74,6 +76,8 @@ local correctSoundChannel
 local incorrectSound = audio.loadStream("Sounds/Boing.mp3")
 local incorrectSoundChannel
 
+local cheeringSound = audio.loadStream("Sounds/Boing.mp3")
+local cheeringSoundChannel
 ----------------------------------------------------------------------------------
 -- LOCAL FUNCTIONS
 ---------------------------------------------------------------------------------
@@ -81,51 +85,109 @@ local incorrectSoundChannel
 -- local functions
 local function AskQuestion()
 
+	-- choose random operator
+	randomOperator = math.random(1,5)
+
+	-- ******* testing remove after ***********
+	randomOperator = 3
+
 	-- if the random operator is 1, do addition
 	if (randomOperator == 1) then
 
 		-- calculate the correct answer
+		randomNumber1 = math.random (1,20)
+		randomNumer2 = math.random (1,20)
 		correctAnswer = randomNumber1 + randomNumber2
-		randomNumber1 = math.random (1,10)
-		randomNumer2 = math.random (1,10)
 
 		-- create question in textObject
 		questionObject.text = randomNumber1 .. "+" .. randomNumber2 .. "="
-		
+
 	-- if it is 2, do subtraction
 	elseif (randomOperator == 2) then
 		--calulate the correct answer
+		randomNumber3 = math.random(1,20)
+		randomNumber4 = math.random(1,20)
 		correctAnswer = randomNumber3 - randomNumber4
-		randomNumber3 = math.random(1,10)
-		randomNumber4 = math.random(1,10)
-
-		-- create question in text object
 		questionObject.text = randomNumber3 .. "-" .. randomNumber4 .. "="
+
+		if (randomNumber3 < randomNumber4) then
+			-- negative answer
+			correctAnswer = randomNumber4 - randomNumber3
+			questionObject.text = randomNumber4 .. "-" .. randomNumber3 .. "="
+		else 
+			correctAnswer = randomNumber3 - randomNumber4
+			-- create question in text object
+			questionObject.text = randomNumber3 .. "-" .. randomNumber4 .. "="
+		end
 	
 	-- if it is 3, do division
 	elseif (randomOperator == 3) then
 		-- calculate the correct answer
-		correctAnswer = randomNumber5/randomNumber6
-		randomNumber5 = math.random(11,20)
-		randomNumber6 = math.random(1,10)
-		-- create question in text object
-		questionObject.text = randomNumber5 .. "/" .. randomNumber6 .. "="
+		randomNumber7 = math.random(1,10)
+		randomNumber8 = math.random(1,10)
+		correctAnswer = randomNumber7/randomNumber8
+		questionObject.text = randomNumber7 .. "/" .. randomNumber8 .. "="
+		correctAnswer = correctAnswer * 10
+		correctAnswer = math.round(correctAnswer)
+		correctAnswer = correctAnswer / 10
+		
 
 	-- if it is 4, do multiplication
 	elseif (randomOperator == 4) then
 		-- calculate the correct answer
-		correctAnswer = randomNumber7 * randomNumber8
 		randomNumber7 = math.random(1,10)
 		randomNumber8 = math.random(1,10)
+		correctAnswer = randomNumber7 * randomNumber8
+
 		-- create question in textObject
 		questionObject.text = randomNumber7 .. "*" .. randomNumber8 .. "="
+
+	-- exponents
 	elseif (randomOperator == 5) then
 		--calculate the correct answer
-		correctAnswer = randomNumber9 ^ randomNumber10
 		randomNumber9 = math.random(1,3)
 		randomNumber10 = math.random(1,3)
+		correctAnswer = randomNumber9 ^ randomNumber10
+
+		
 		-- create question in text object
 		questionObject.text = randomNumber9 .. "^" .. randomNumber10 .. "="
+	end
+end
+
+
+-- decrease lives function
+local function DecreaseLives ()
+
+	if (lives == 3) then
+		secondsLeft = totalSeconds
+		heart1.isVisible = true
+		heart2.isVisible = true
+		heart3.isVisible = true
+	elseif (lives == 2) then
+		heart1.isVisible = true
+		heart2.isVisible = true
+		heart3.isVisible = false
+		secondsLeft = totalSeconds
+	elseif (lives == 1) then
+		heart1.isVisible = true
+		heart2.isVisible = false
+		heart3.isVisible = false
+		secondsLeft = totalSeconds
+	elseif (lives == 0) then
+		numericField.isVisible = false
+		heart1.isVisible = false
+		heart2.isVisible = false
+		heart3.isVisible = false
+		gameOver.isVisible = true
+		youWin.isVisible = false
+		youLoseSoundChannel = audio.play( youLoseSound )
+		timer.cancel(countDownTimer)
+		backgroundImage.isVisible = false
+		thumbDown.isVisible = true
+		clockText.isVisible = false
+		questionObject.isVisible = false
+		scoreText.isVisible = false
 	end
 end
 
@@ -165,7 +227,7 @@ local function UpdateTime ()
 			heart3.isVisible = false
 			heart2.isVisible = false
 			heart1.isVisible = false
-			gameOver.isVisible = trueS
+			gameOver.isVisible = true
 			youWin.isVisible = false
 			youLoseSoundChannel = audio.play( youLoseSound )
 			timer.cancel(countDownTimer)
@@ -175,6 +237,8 @@ local function UpdateTime ()
 			questionObject.isVisible = false
 			countDownTimer.isVisible = false
 			scoreText.isVisible = false
+			thumbDown.isvisible = true
+			DecreaseLives ()
 		end
 	end
 end
@@ -185,6 +249,14 @@ local function Win()
 		youWin.isVisible = true
 		youWinSoundChannel = audio.play( youWinSound )
 		timer.cancel(countDownTimer)
+		numericField.isVisible = false
+		clockText.isVisible = false
+		scoreText.isVisible = false
+		heart1.isVisible = false
+		heart2.isVisible = false
+		heart3.isVisible = false
+		questionObject.isVisible = false
+		backgroundImage.isVisible = false
 	end
 end
 
@@ -200,37 +272,7 @@ local function HideIncorrect ()
 	AskQuestion()
 end
 
--- decrease lives function
-local function DecreaseLives ()
-
-	if (lives == 3) then
-		secondsLeft = totalSeconds
-		heart1.isVisible = true
-		heart2.isVisible = true
-		heart3.isVisible = true
-	elseif (lives == 2) then
-		heart1.isVisible = true
-		heart2.isVisible = true
-		heart3.isVisible = false
-		secondsLeft = totalSeconds
-	elseif (lives == 1) then
-		heart1.isVisible = true
-		heart2.isVisible = false
-		heart3.isVisible = false
-		secondsLeft = totalSeconds
-	elseif (lives == 0) then
-		numericField.isVisible = false
-		heart1.isVisible = false
-		heart2.isVisible = false
-		heart3.isVisible = false
-		gameOver.isVisible = true
-		youWin.isVisible = false
-		youLoseSoundChannel = audio.play( youLoseSound )
-		timer.cancel(countDownTimer)
-		backgroundImage.isVisible = false
-	end
-end
-
+-- numeric field listener
 local function NumericFieldListener ( event )
 
 	-- user begins editing "numericField"
@@ -241,18 +283,21 @@ local function NumericFieldListener ( event )
 
 	elseif event.phase == "submitted" then
 
-		-- when the user's answer is submitted (enter key is pressed) set user input to the user's answer
+		-- when the user's answer is submitted (enter key is pressed)
+		-- set user input to the user's answer
 		userAnswer = tonumber(event.target.text)
+		print ("***userAnswer =" .. userAnswer)
+		print ("***correctAnswer = " .. correctAnswer)
 
 		-- if the user's answer and the correct answer are the same:
 		if (userAnswer == correctAnswer) then
 			correctObject.isVisible = true
-			incorrectObject.isVisible = false
 			score = score+1
 			scoreText.text = " Score = " .. score
-			correctSoundChannel = audio.play( correctAnswer )
+			correctSoundChannel = audio.play( correctSound )
 			timer.performWithDelay( 500, HideCorrect )
 			secondsLeft = totalSeconds
+			Win ()
 		else
 			incorrectObject.isVisible = true
 			timer.performWithDelay ( 2000, HideIncorrect )
@@ -287,12 +332,12 @@ gameOver.x = 500
 gameOver.y = 400
 
 -- create you win and make it invisible
-youWin = display.newImageRect("Images/you_win.png", 800,800)
+youWin = display.newImageRect("Images/you_win.png", 800,950)
 youWin.isVisible = false
 
 -- x.y of you win
-youWin.x = 300
-youWin.y = 300
+youWin.x = 500
+youWin.y = 350
 
 -- displays a question and sets the color
 questionObject = display.newText("", 150, 250, nil, 65)
@@ -330,6 +375,14 @@ numericField: addEventListener("userInput", NumericFieldListener)
 heart1 = display.newImageRect ("Images/heart.png", 100,100)
 heart2 = display.newImageRect ("Images/heart.png", 100,100)
 heart3 = display.newImageRect ("Images/heart.png", 100,100)
+
+-- thumb down object and make it invisible
+thumbDown = display.newImageRect ("Images/thumbDown.png", 100,100)
+thumbDown.isVisible = false
+
+-- x,y of the thumb
+thumbDown.x = 300
+thumbDown.y = 400
 
 -- set x,y position of hearts
 heart1.x = 650
